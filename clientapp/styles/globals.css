@@ -18,3 +18,12 @@ a {
 * {
   box-sizing: border-box;
 }
+
+.contracted {
+  margin-top:-100%;
+  transition: 1s;
+}
+.expanded {
+  margin-top: 0%;
+  transition:1s;
+}

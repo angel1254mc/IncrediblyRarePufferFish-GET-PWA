@@ -1,28 +1,105 @@
 import Head from "next/head";
 import styles from "../styles/Home.module.css";
+import React, {useEffect, useState} from 'react';
+import TextField from "@mui/material/TextField";
+import Autocomplete from "@mui/material/Autocomplete";
+import NavBar from "../components/NavBar";
+import data from "../src/frontendDevFakeData/fakeData";
+import HitCard from "../components/HitCard";
+import NoHits from "../components/NoHits";
 
+const foundInArray = (el, arr) => {
+  for (let i = 0; i < arr.length; i++)
+  {
+    if (el.TITLE == arr[i].TITLE)
+      return true;
+  }
+  return false;
+}
+const getAllElements = async () => {
+  let url = "http://localhost:3000/api/GETRetrieveCollection?";
+  const manyElements = await fetch(url, {method: 'GET'}).then(response => response.json());
+  return manyElements;
+}
+const getSearchResults = async (searchStr) => {
+  try  {
+    let searchableStr = searchStr.replace(/\s/g, "+");
+    let url = "http://localhost:3000/api/GETSearchOptimized?searchTerm=" + searchableStr;
+
+    let searchResultData = await fetch(url, {method: 'GET'}).then(response => response.json());
+    return searchResultData;
+  }
+  catch (err)
+  {
+    console.log(err);
+  }
+}
   
 export default function Home() {
+
+    const [options, setOptions] = useState([]);
+    const [allElements, setAllElements] = useState([]);
+    const [search, setSearch] = useState("");
+    let count = 0;
+    const onNewSearch = async (e) => {
+      setSearch(e.target.value);
+      if (e.target.value) {
+        let data = await getSearchResults(e.target.value);
+        setOptions(data);
+      }
+    }
+    const populateAllElements = async () => {
+      let data = await getAllElements();
+      console.log(data);
+      setAllElements(data);
+    }
+
+    useEffect(() => {
+      //Do something with this later maybe
+      populateAllElements();
+    }, [])
     return (
-        <div className="">
+        <div className="w-full">
             <Head>
-                <title>Create Next App</title>
+                <title>GET APP PWA</title>
                 <link rel="icon" href="/favicon.ico" />
             </Head>
   
-            <main className={styles.main}>
-                <h1 className={styles.title}>
-                    Welcome to <a href="https://nextjs.org">
-                        Next.js!</a> integrated with{" "}
-                    <a href="https://mui.com/">Material-UI!</a>
-                    <div className="text-5xl underline p-10 flex justify-center items-center bg-black text-white">
-                      Get started by editing{" "}
-                      <code className="">
-                        pages/index.js</code>
-                    </div>
-                </h1>
-                
-  
+            <main className="flex w-auto flex-col items-center justify-center">
+                <NavBar></NavBar>
+                <div className ="w-4/5 mt-2">
+                  <TextField 
+                  className= "w-full"  
+                  label = "GETSearch"
+                  value = {search}
+                  onChange={(e) => {onNewSearch(e);}}
+                  />
+                </div>
+                <div className="w-4/5 py-5">
+                  {options && options.length > 0 ? options.map((hit) => {
+                    count++;
+                    return <HitCard key={count} termData={hit}></HitCard>
+                  }) : options && options.length == 0 && search != "" 
+                  ? <NoHits></NoHits>
+                  : []
+                  }
+                  <div className=" bg-gray-400 text-white flex justify-center items-center px-2 py-3 w-full h-10 mb-4 rounded-lg overflow-y-hidden">
+                    <h1 className="font-light text-md">Additional Results</h1>
+                  </div>
+                  {allElements ? allElements.map((el) => {
+                      if (!foundInArray(el, options))
+                      {
+                        count++;
+                        if (count > 50)
+                        {
+
+                          return
+                        }
+                        return <HitCard key={count} termData={el}></HitCard>;
+                      }
+                    }) : []
+                  }
+                </div>
             </main>
         </div>
     );
