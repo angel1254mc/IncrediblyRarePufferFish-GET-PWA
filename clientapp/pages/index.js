@@ -15,7 +15,7 @@ const foundInArray = (el, arr) => {
   return false;
 };
 const getAllElements = async () => {
-  let url = "http://localhost:3000/api/GETRetrieveCollection?";
+  let url = window.location.origin + "/api/GETRetrieveCollection?";
   const manyElements = await fetch(url, { method: "GET" }).then((response) =>
     response.json()
   );
@@ -31,7 +31,7 @@ const getSearchResults = async (searchStr) => {
   try {
     let searchableStr = searchStr.replace(/\s/g, "+");
     let url =
-      "http://localhost:3000/api/GETSearchOptimized?searchTerm=" +
+      window.location.origin + "/api/GETSearchOptimized?searchTerm=" +
       searchableStr;
 
     let searchResultData = await fetch(url, { method: "GET" }).then(
