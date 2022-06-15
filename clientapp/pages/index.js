@@ -7,13 +7,22 @@ import NavBar from "../components/NavBar";
 import data from "../src/frontendDevFakeData/fakeData";
 import HitCard from "../components/HitCard";
 import NoHits from "../components/NoHits";
-
+/**
+ * @func foundInArray is a simple utility function to check if a dbentry element is already in an array (the allElements array, namely)
+ * @param {Object.prototype w/ TITLE key} el 
+ * @param {Array of Object.prototypes} arr 
+ * @returns A boolean, true if the element is in the array, false if the element is not in the array.
+ */
 const foundInArray = (el, arr) => {
   for (let i = 0; i < arr.length; i++) {
     if (el.TITLE == arr[i].TITLE) return true;
   }
   return false;
 };
+/**
+ * @func getAllElements retrieves all the elements in the DB, returning them as an array to be stored in a variable.
+ * @returns an array of all the elements in the DB/collection
+ */
 const getAllElements = async () => {
   let url = window.location.origin + "/api/GETRetrieveCollection?";
   const manyElements = await fetch(url, { method: "GET" }).then((response) =>
@@ -43,6 +52,9 @@ const getSearchResults = async (searchStr) => {
   }
 };
 
+/**
+ * @component The index page of the website. Everything in this component is pretty much the main page.
+ */
 export default function Home() {
   const [options, setOptions] = useState([]);
   const [allElements, setAllElements] = useState([]);
@@ -77,6 +89,7 @@ export default function Home() {
       <main className="flex w-auto flex-col items-center justify-center">
         <NavBar></NavBar>
         <div className="w-4/5 mt-2">
+          {/*This TextField element is from MaterialUI, it comes previously styled to look like a google textfield*/}
           <TextField
             className="w-full"
             label="GETSearch"
@@ -87,6 +100,7 @@ export default function Home() {
             }}
           />
         </div>
+        {/**Modify this later to account for larger viewports. Preferably have cards display in grid form*/}
         <div className="w-4/5 py-5"> {/**Maps @var options to a HitCard element. If options is empty, that means no elements satisfy the query/search, so the NoHits element is rendered instead */}
           {options && options.length > 0 ? (
             options.map((hit) => {
@@ -101,7 +115,7 @@ export default function Home() {
           <div className=" bg-gray-400 text-white flex justify-center items-center px-2 py-3 w-full h-10 mb-4 rounded-lg overflow-y-hidden">
             <h1 className="font-light text-md">Additional Results</h1>
           </div>
-          {/**Maps @var allElements to a HitCard, but does not render those that have already been included by the @var options in the previous lines */}
+          {/**Maps @var allElements to a HitCard, but leaves out those that have already been included by the @var options in the previous lines */}
           {allElements
             ? allElements.map((el) => {
                 if (!foundInArray(el, options)) {
