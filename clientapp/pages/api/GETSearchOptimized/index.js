@@ -1,7 +1,7 @@
 //Gotta Import MongoDB and implement search thru the Try Catch
 import { MongoClient } from 'mongodb'
 
-const client = new MongoClient(process.env.DB_URL);
+const client = new MongoClient(process.env.MONGODB_URI);
 client.connect().then(() => console.log("Successfully connected to MongoDB"));
 
 export default async (req, res) => {
